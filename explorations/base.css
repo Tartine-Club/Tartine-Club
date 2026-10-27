@@ -1,0 +1,90 @@
+@font-face {
+  font-family: "Faro";
+  src: local("Faro Display Lucky"), url("assets/fonts/Faro-DisplayLucky.otf") format("opentype");
+  font-display: swap;
+}
+
+:root {
+  --brun: #7D3522;
+  --rouge: #DC472E;
+  --moutarde: #ECB552;
+  --rose: #E79DBF;
+  --creme: #FDF0E2;
+  --vert: #579E6D;
+  --bleu: #3C86BD;
+  --turquoise: #A2D1D4;
+  /* Small text only in brun on creme, turquoise or moutarde (≥ 4.5:1).
+     Rouge, bleu, vert, rose backgrounds: big titles only, small text sits on a creme card. */
+  --bg: var(--creme);
+  --titre: "Faro", "Arial Black", sans-serif;
+  --texte: "Geist", system-ui, sans-serif;
+  --gouttiere: clamp(16px, 5vw, 80px);
+}
+
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--brun);
+  font: 400 1.125rem/1.55 var(--texte);
+  transition: background-color .7s ease;
+  overflow-x: hidden;
+}
+/* grain over everything, like the illustrations */
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  opacity: .16; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--brun); outline-offset: 3px; border-radius: 4px; }
+
+.titre { font-family: var(--titre); font-weight: 400; line-height: .92; letter-spacing: -.01em; }
+
+/* nav */
+.nav {
+  position: fixed; inset: 0 0 auto; z-index: 50;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px var(--gouttiere);
+}
+.nav__logo { font-family: var(--titre); font-size: 1.6rem; text-decoration: none; }
+/* creme pills keep the nav readable over any section colour */
+.nav__logo, .nav ul a { background: var(--creme); padding: 6px 14px; border-radius: 99px; }
+.nav ul { display: flex; gap: clamp(12px, 3vw, 40px); list-style: none; padding: 0; }
+.nav ul a { text-decoration: none; font-weight: 500; }
+.nav ul a:hover { text-decoration: underline wavy; text-underline-offset: 6px; }
+
+section, footer { position: relative; padding: clamp(80px, 12vw, 160px) var(--gouttiere); overflow-x: clip; }
+
+/* stickers */
+.sticker {
+  position: absolute; width: min(var(--w, 160px), 28vw);
+  filter: drop-shadow(0 10px 14px rgb(125 53 34 / .22));
+  rotate: var(--r, 0deg);
+  cursor: grab; touch-action: none; user-select: none;
+  transition: scale .2s ease;
+}
+.sticker:hover { scale: 1.06; }
+.sticker.is-dragging { cursor: grabbing; scale: 1.1; z-index: 60; }
+
+/* placeholder project visuals */
+.visuel { border-radius: 18px; aspect-ratio: 4 / 5; display: grid; place-items: end start; padding: 20px; overflow: hidden; }
+.visuel span { background: var(--creme); color: var(--brun); padding: 4px 12px; border-radius: 99px; font-size: .9rem; font-weight: 500; }
+
+/* the travelling tartine (2D stand-in for the 3D one) */
+#tartine-voyage {
+  position: absolute; left: 0; top: 0; width: clamp(110px, 14vw, 190px);
+  z-index: 40; pointer-events: none; will-change: transform;
+  filter: drop-shadow(0 16px 18px rgb(125 53 34 / .3));
+}
+#tartine-voyage.is-posee { animation: pose .5s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes pose { 0% { scale: 1.12 .85; } 100% { scale: 1; } }
+
+.contact { display: flex; flex-wrap: wrap; gap: 24px 48px; font-size: 1rem; }
+.contact small { display: block; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: .75rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}

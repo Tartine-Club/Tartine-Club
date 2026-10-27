@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tartine Club — A · L'étiquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Hero: the floral tablecloth with a jam-jar label on top */
+  .hero {
+    min-height: 100svh; display: grid; place-items: center; padding-top: 100px;
+    background: url("assets/motif.png") center / cover no-repeat;
+  }
+  .etiquette {
+    position: relative; width: min(92vw, 980px); aspect-ratio: 1.55;
+    display: grid; place-items: center; text-align: center;
+    background: var(--creme); border-radius: 50%;
+    box-shadow: 0 0 0 10px var(--creme), 0 0 0 14px var(--rouge), 0 30px 60px rgb(125 53 34 / .35);
+  }
+  .etiquette h1 { font-size: clamp(3.4rem, 13vw, 10rem); color: var(--rouge); }
+  .etiquette p { font-weight: 500; font-size: clamp(1rem, 2vw, 1.35rem); margin-top: 12px; }
+  .ronde { position: absolute; inset: -9%; width: 118%; height: 118%; animation: tourne 40s linear infinite; }
+  .ronde text { font: 700 15px var(--texte); letter-spacing: .32em; text-transform: uppercase; fill: var(--brun); }
+  @keyframes tourne { to { rotate: 360deg; } }
+  #depart { position: absolute; top: 34%; right: 2%; width: 1px; height: 1px; }
+
+  .intro { display: grid; grid-template-columns: repeat(12, 1fr); }
+  .intro p { grid-column: 3 / 12; font: 2.2rem/1.15 var(--titre); font-size: clamp(1.7rem, 3.6vw, 3.2rem); }
+  .intro p em { font-style: normal; color: var(--rouge); }
+
+  .projets h2, .services h2 { font-size: clamp(3rem, 9vw, 8rem); margin-bottom: 56px; }
+  .grille { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 6%; }
+  .grille article:nth-child(even) { margin-top: 22%; }
+  .grille h3 { font: 2rem var(--titre); margin-top: 16px; }
+  .grille p { font-size: 1rem; }
+
+  .services h2 { color: var(--creme); }
+  .cartes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .carte { background: var(--creme); border-radius: 22px; padding: 32px; rotate: var(--r); }
+  .carte img { width: 110px; margin: -70px 0 8px; }
+  .carte h3 { font: 2rem var(--titre); margin-bottom: 8px; }
+
+  footer { text-align: center; padding-bottom: 40px; }
+  footer h2 { font-size: clamp(2.6rem, 8vw, 7rem); max-width: 14ch; margin: 0 auto; }
+  .table { position: relative; max-width: 1100px; margin: 40px auto 60px; }
+  #atterrissage { position: absolute; left: 50%; top: 62%; width: 1px; height: 1px; }
+  footer .contact { justify-content: center; border-top: 2px solid; padding-top: 24px; text-align: left; }
+
+  @media (max-width: 760px) {
+    .grille, .cartes { grid-template-columns: 1fr; }
+    .grille article:nth-child(even) { margin-top: 0; }
+    .intro p { grid-column: 1 / -1; }
+    .etiquette { aspect-ratio: .9; }
+    .etiquette h1 { font-size: 19vw; }
+    .nav ul { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Principale">
+  <a class="nav__logo" href="#">Tartine Club</a>
+  <ul><li><a href="#projets">projets</a></li><li><a href="#">à propos</a></li><li><a href="#contact">contact</a></li></ul>
+</nav>
+
+<main>
+  <section class="hero" data-bg="#FDF0E2">
+    <div class="etiquette">
+      <svg class="ronde" viewBox="0 0 400 260" aria-hidden="true">
+        <path id="ovale" d="M200,15 a185,115 0 1,1 -0.1,0" fill="none"/>
+        <text><textPath href="#ovale" textLength="955" lengthAdjust="spacing">On se fait un dej ? · Toulouse · depuis 2026 · petit-déj & gaudriole ·</textPath></text>
+      </svg>
+      <div>
+        <h1 class="titre">Tartine<br>Club</h1>
+        <p>le coolectif de graphistes cool</p>
+      </div>
+      <span id="depart"></span>
+      <img class="sticker" src="assets/croissant.png" alt="" style="--w:170px;--r:-14deg;left:-6%;bottom:2%">
+      <img class="sticker" src="assets/moka.png" alt="" style="--w:120px;--r:10deg;right:-3%;bottom:-8%">
+    </div>
+  </section>
+
+  <section class="intro" data-bg="#FDF0E2">
+    <p>Tartine Club, c'est <em>Léa</em> et <em>Maël</em>, deux graphistes toulousains qui prennent le petit-déj et la gaudriole très au sérieux. Identités, éditions, illustrations : on vous sert tout ça bien chaud.</p>
+    <img class="sticker" src="assets/fraise.png" alt="" style="--w:90px;--r:18deg;left:8%;top:30%">
+  </section>
+
+  <section class="projets" id="projets" data-bg="#E79DBF">
+    <h2 class="titre">Les projets</h2>
+    <div class="grille">
+      <article><div class="visuel" style="background:var(--bleu)"><span>identité · site</span></div><h3>Avocatio</h3><p>Un cabinet d'avocats qui n'a pas peur de sourire.</p></article>
+      <article><div class="visuel" style="background:var(--moutarde)"><span>identité · supports</span></div><h3>ProLudiQ</h3><p>Une formation QSE ludique… what the phoque ?</p></article>
+      <article><div class="visuel" style="background:var(--vert)"><span>supports de com</span></div><h3>FFRandonnée Occitanie</h3><p>Le sommet de la réussite.</p></article>
+      <article><div class="visuel" style="background:var(--rouge)"><span>édition</span></div><h3>La vie de Robert B.</h3><p>L'histoire extraordinaire d'un paysan ordinaire.</p></article>
+    </div>
+  </section>
+
+  <section class="services" data-bg="#579E6D">
+    <h2 class="titre">Au menu</h2>
+    <div class="cartes">
+      <div class="carte" style="--r:-3deg"><img src="assets/confiture.png" alt=""><h3>Identité</h3><p>Logos, chartes et packagings qui donnent envie d'ouvrir le pot.</p></div>
+      <div class="carte" style="--r:2deg"><img src="assets/tasse.png" alt=""><h3>Supports de com</h3><p>Affiches, flyers, menus, tout ce qui se tient en main.</p></div>
+      <div class="carte" style="--r:-1.5deg"><img src="assets/grille-pain.png" alt=""><h3>Digital</h3><p>Sites et interfaces qui sortent du grille-pain pile à point.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact" data-bg="#ECB552">
+  <h2 class="titre">Avec nous, votre tartine tombe toujours du bon côté !</h2>
+  <div class="table">
+    <img src="assets/lea-mael.png" alt="Léa et Maël à leur table de travail, ordinateurs ouverts, qui discutent en souriant">
+    <span id="atterrissage"></span>
+  </div>
+  <div class="contact">
+    <p><small>bureau</small>Toulouse, France</p>
+    <p><small>mail</small><a href="mailto:bonjour@tartine-club.fr">bonjour@tartine-club.fr</a></p>
+    <p><small>ailleurs</small><a href="#">LinkedIn</a> · <a href="#">Instagram</a></p>
+  </div>
+</footer>
+
+<img id="tartine-voyage" src="assets/tartine.png" alt="">
+<script src="base.js"></script>
+</body>
+</html>

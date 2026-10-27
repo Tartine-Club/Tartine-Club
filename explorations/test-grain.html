@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tartine Club — test du grain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+<style>
+  body { --bg: var(--moutarde); }
+  /* the page grain overlay would blur the comparison */
+  body::after { display: none; }
+  main { padding: 32px var(--gouttiere); display: grid; gap: 32px; }
+  h1 { font-size: clamp(2rem, 5vw, 3.6rem); }
+  .comparaison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  figure { background: var(--creme); border-radius: 22px; padding: 20px; display: grid; gap: 12px; }
+  figure img, figure canvas { width: 100%; aspect-ratio: 1; object-fit: contain; }
+  figcaption { font-weight: 500; }
+  .refs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; }
+  .refs img { aspect-ratio: auto; }
+  .reglages { background: var(--creme); border-radius: 22px; padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px 32px; }
+  .reglages label { display: grid; gap: 6px; font-weight: 500; }
+  .reglages output { font-weight: 700; }
+  input[type=range] { accent-color: var(--rouge); width: 100%; }
+  .preselections { display: flex; flex-wrap: wrap; gap: 10px; grid-column: 1 / -1; }
+  .preselections button {
+    font: 500 1rem var(--texte); color: var(--brun); background: var(--moutarde);
+    border: 0; border-radius: 99px; padding: 10px 18px; cursor: pointer;
+  }
+  .preselections button[aria-pressed=true] { background: var(--brun); color: var(--creme); }
+  @media (max-width: 760px) { .comparaison { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1 class="titre">Test du grain</h1>
+
+  <div class="comparaison">
+    <figure>
+      <div class="refs">
+        <img src="assets/tartine.png" alt="La tartine illustrée de référence">
+        <img src="assets/raw/lea-mael.png" alt="Détail de l'illustration de Léa et Maël, pour le grain">
+      </div>
+      <figcaption>Vos illustrations (référence)</figcaption>
+    </figure>
+    <figure>
+      <canvas id="scene" aria-label="Tartine en 3D qui tourne lentement"></canvas>
+      <figcaption>La tartine 3D · glisse dessus pour la tourner</figcaption>
+    </figure>
+  </div>
+
+  <form class="reglages" onsubmit="return false">
+    <div class="preselections" role="group" aria-label="Préréglages">
+      <button type="button" data-p="0,1.5,0,0">Lisse (actuel)</button>
+      <button type="button" data-p="0.55,1.5,0.6,0" aria-pressed="true">Grain doux</button>
+      <button type="button" data-p="1,2,0.8,0">Grain fort</button>
+      <button type="button" data-p="0.9,1.5,0.7,3">Aplats granuleux</button>
+      <button type="button" data-p="1,2.5,0.8,2">Risographie</button>
+    </div>
+    <label>Grain <output id="o-uGrain"></output><input type="range" id="uGrain" min="0" max="1.5" step="0.05"></label>
+    <label>Taille du grain (px) <output id="o-uTaille"></output><input type="range" id="uTaille" min="1" max="5" step="0.5"></label>
+    <label>Ombres chaudes <output id="o-uChaud"></output><input type="range" id="uChaud" min="0" max="1" step="0.05"></label>
+    <label>Tons (0 = dégradé lisse) <output id="o-uTons"></output><input type="range" id="uTons" min="0" max="6" step="1"></label>
+    <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="confiture"> Couche de confiture (masquée dans le .blend)</label>
+  </form>
+</main>
+
+<script type="module">
+  import * as THREE from "three";
+  import { creerTartine, eclairer, grain } from "./tartine-modele.js";
+
+  const canvas = document.getElementById("scene");
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(grain.uRatio.value);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-0.75, 0.75, 0.75, -0.75, -10, 10);
+  eclairer(scene, renderer);
+  const tartine = await creerTartine();
+  scene.add(tartine);
+  const jam = tartine.getObjectByName("Jam");
+  document.getElementById("confiture").addEventListener("change", (e) => (jam.visible = e.target.checked));
+
+  // sliders <-> shader uniforms
+  const cles = ["uGrain", "uTaille", "uChaud", "uTons"];
+  const maj = () => cles.forEach((k) => { grain[k].value = +document.getElementById(k).value; document.getElementById("o-" + k).textContent = grain[k].value; });
+  cles.forEach((k) => { document.getElementById(k).value = grain[k].value; document.getElementById(k).addEventListener("input", () => { maj(); presel(null); }); });
+  const boutons = document.querySelectorAll("[data-p]");
+  const presel = (b) => boutons.forEach((x) => x.setAttribute("aria-pressed", x === b));
+  boutons.forEach((b) => b.addEventListener("click", () => {
+    b.dataset.p.split(",").forEach((v, i) => (document.getElementById(cles[i]).value = v));
+    maj(); presel(b);
+  }));
+  maj();
+
+  // slow turn, drag to rotate
+  let ry = 0.3, rx = -0.85, glisse = null; // same three-quarter view as the illustration
+  canvas.addEventListener("pointerdown", (e) => { glisse = [e.clientX, e.clientY, ry, rx]; canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener("pointermove", (e) => { if (glisse) { ry = glisse[2] + (e.clientX - glisse[0]) / 100; rx = glisse[3] + (e.clientY - glisse[1]) / 100; } });
+  canvas.addEventListener("pointerup", () => (glisse = null));
+  const calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function frame() {
+    const w = canvas.clientWidth;
+    if (canvas.width !== Math.round(w * grain.uRatio.value)) renderer.setSize(w, w, false);
+    if (!glisse && !calme) ry += 0.004;
+    tartine.rotation.set(rx, ry, -0.15);
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+</script>
+</body>
+</html>

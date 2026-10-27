@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tartine Club — B · La carte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+<style>
+  /* Hero: one giant sentence, small breakfast items inside the words */
+  .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: 120px; }
+  .hero h1 { font-size: clamp(2.8rem, 9.4vw, 11rem); text-transform: uppercase; }
+  .hero h1 .l { display: flex; align-items: center; gap: .16em; }
+  .hero h1 .l:nth-child(2) { padding-left: 8vw; color: var(--rouge); }
+  /* small by default, grows on hover and pushes the words aside */
+  .pastille {
+    height: .38em; width: auto; flex: none; cursor: pointer;
+    filter: drop-shadow(0 6px 8px rgb(125 53 34 / .25));
+    transition: height .45s cubic-bezier(.3, 1.5, .5, 1), rotate .45s;
+  }
+  .pastille:hover { height: 1em; rotate: -6deg; }
+  /* the 3D tartine sits here first and grows with the first scroll */
+  .trou { flex: none; width: calc(.42em + var(--pousse, 0) * 1.4em); aspect-ratio: 1.15; }
+  .hero__pied { display: flex; justify-content: space-between; gap: 24px; margin-top: 48px; font-weight: 500; flex-wrap: wrap; }
+
+  /* Scrollytelling: the tartine stays on the right while three steps go by */
+  .histoire { height: 340vh; padding: 0; }
+  .histoire__colle {
+    position: sticky; top: 0; height: 100svh;
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 4vw;
+    padding: 0 var(--gouttiere);
+  }
+  .histoire__textes { position: relative; min-height: 22rem; }
+  .etape {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; translate: 0 40px; transition: opacity .5s, translate .5s;
+  }
+  .etape.is-active { opacity: 1; translate: 0 0; }
+  .etape .num { font-weight: 700; letter-spacing: .2em; }
+  .etape h2 { font-size: clamp(2.4rem, 5vw, 4.6rem); margin: 12px 0 20px; }
+  .etape p:last-child { font-size: 1.2rem; max-width: 34ch; }
+  #histoire-ancre { justify-self: center; width: min(36vw, 62svh); aspect-ratio: 1; }
+
+  /* Plats du jour */
+  /* brun on rose is 4.1:1: big titles only, small text stays on the creme cards */
+  .plats { padding-bottom: clamp(40px, 6vw, 80px); }
+  .plats h2 { font-size: clamp(3rem, 9vw, 8rem); }
+  .plats .chapo { font: 1.6rem var(--titre); margin: 8px 0 48px; }
+  .bande { display: flex; gap: 28px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gouttiere); padding: 12px var(--gouttiere) 36px; margin: 0 calc(var(--gouttiere) * -1); }
+  .plat {
+    flex: 0 0 min(78vw, 420px); scroll-snap-align: start; background: var(--creme); border-radius: 22px; padding: 14px 14px 24px;
+    text-decoration: none; transition: rotate .3s, translate .3s cubic-bezier(.3, 1.6, .5, 1);
+  }
+  .plat:nth-child(odd) { rotate: -1.5deg; } .plat:nth-child(even) { rotate: 1.5deg; }
+  .plat:is(:hover, :focus-visible) { rotate: 0deg; translate: 0 -10px; }
+  .plat:is(:hover, :focus-visible) .visuel span::after { content: " · chaud devant !"; }
+  .plat .visuel { aspect-ratio: 4 / 3; background-image: var(--img); background-size: 42%; background-repeat: no-repeat; background-position: 88% 18%; }
+  .plat h3 { font: 1.8rem var(--titre); margin: 16px 8px 4px; }
+  .plat p { margin: 0 8px; font-size: 1rem; }
+
+  /* La carte */
+  .menu-zone { display: grid; place-items: center; padding-top: clamp(40px, 6vw, 80px); isolation: isolate; }
+  /* the Arcopal flowers as a tablecloth under the menu */
+  .menu-zone::before { content: ""; position: absolute; inset: 6% 3%; z-index: -1; rotate: 1.5deg; border-radius: 28px; background: url("assets/motif.webp") center / 520px; }
+  .menu {
+    width: min(100%, 760px); background: var(--creme); rotate: -2.5deg;
+    padding: clamp(28px, 6vw, 72px); border-radius: 6px;
+    box-shadow: inset 0 0 0 10px var(--creme), inset 0 0 0 12px var(--brun), 0 40px 70px rgb(125 53 34 / .3);
+  }
+  .menu h2 { font-size: clamp(2.6rem, 7vw, 5rem); text-align: center; }
+  .menu .sous { text-align: center; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; font-size: .85rem; margin: 8px 0 40px; }
+  .menu dl > div { display: flex; align-items: baseline; gap: 12px; padding: 14px 0; }
+  .menu dt { font: 1.7rem var(--titre); white-space: nowrap; }
+  .menu .pointilles { flex: 1; border-bottom: 3px dotted; translate: 0 -6px; }
+  .menu dd { font-size: 1rem; text-align: right; max-width: 22ch; }
+  .menu-zone .sticker { --w: clamp(90px, 12vw, 170px); }
+  .menu .note { text-align: center; font-size: .95rem; margin-top: 28px; font-style: italic; }
+  /* toaster easter egg */
+  .grille { position: absolute; right: 7%; bottom: 7%; width: clamp(110px, 12vw, 170px); background: none; border: 0; padding: 0; cursor: pointer; rotate: -6deg; }
+  .grille img { position: relative; filter: drop-shadow(0 10px 14px rgb(125 53 34 / .25)); }
+  .grille .pain { position: absolute; left: 22%; top: -2%; width: 50%; z-index: -1; filter: none; }
+  .grille.saute .pain { animation: saute .9s cubic-bezier(.3, .7, .4, 1); }
+  @keyframes saute { 40% { translate: 0 -170%; rotate: 200deg; } 100% { translate: 0 0; rotate: 360deg; } }
+  .ding { position: absolute; right: 6%; bottom: calc(7% + clamp(110px, 12vw, 170px)); background: var(--creme); padding: 6px 14px; border-radius: 99px; font-weight: 700; }
+  .ding:empty { display: none; }
+
+  footer { padding-bottom: 40px; }
+  footer h2 { font-size: clamp(2.6rem, 9vw, 8.5rem); color: var(--creme); text-transform: uppercase; }
+  .table { position: relative; max-width: 1000px; margin: 20px 0 60px auto; }
+  #atterrissage { position: absolute; left: 50%; top: 63%; width: 17%; aspect-ratio: 1; translate: -50% -50%; }
+  /* contact shadow and Léa's speech bubble appear when the tartine lands */
+  .table::after { content: ""; position: absolute; left: 50%; top: 74%; width: 15%; height: 3%; translate: -50% 0; border-radius: 50%; background: rgb(80 20 10 / .35); filter: blur(6px); opacity: 0; transition: opacity .4s; }
+  .is-posee .table::after { opacity: 1; }
+  .bulle { position: absolute; left: 18%; top: -2%; background: var(--creme); padding: 10px 18px; border-radius: 22px 22px 22px 4px; font: 1.3rem var(--titre); scale: 0; transform-origin: 0 100%; transition: scale .45s cubic-bezier(.3, 1.6, .5, 1); }
+  .is-posee .bulle { scale: 1; }
+  .appel { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; margin-bottom: 40px; }
+  .cta { display: inline-flex; align-items: center; min-height: 44px; background: var(--creme); color: var(--brun); text-decoration: none; font-size: clamp(1.6rem, 3.4vw, 2.6rem); padding: 18px 34px; border-radius: 99px; transition: rotate .3s, scale .3s; }
+  .cta:hover { rotate: -2deg; scale: 1.04; }
+  .is-posee .cta { animation: hop .6s cubic-bezier(.3, 1.6, .5, 1); }
+  @keyframes hop { 40% { translate: 0 -12px; } }
+  /* 24px+ regular counts as large text: creme on rouge passes at 3.8:1 */
+  .appel p { color: var(--creme); font: 1.5rem var(--titre); }
+  footer .contact { background: var(--creme); border-radius: 22px; padding: 24px 32px; }
+
+  #tartine-3d {
+    position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40;
+    filter: drop-shadow(0 18px 16px rgb(125 53 34 / .3));
+  }
+
+  @media (max-width: 760px) {
+    .hero { min-height: auto; padding-top: 110px; }
+    .hero h1 .l { display: inline; padding-left: 0; }
+    .pastille { height: .6em; display: inline; vertical-align: -.05em; }
+    .trou { display: inline-block; vertical-align: middle; }
+    .cta { font-size: 1.35rem; padding: 14px 24px; }
+    .hero__pied { flex-direction: column; gap: 4px; }
+    .menu-zone .sticker { top: auto !important; bottom: -24px; }
+    .menu-zone { padding-bottom: 200px; }
+    .grille { right: 50%; translate: 50% 0; bottom: 30px; }
+    .ding { right: 50%; translate: 50% 0; bottom: 170px; }
+    .histoire__colle { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-items: start; padding-top: 90px; }
+    #histoire-ancre { order: -1; width: min(62vw, 34svh); }
+    .menu dl > div { flex-wrap: wrap; } .menu .pointilles { display: none; } .menu dd { text-align: left; }
+    .nav ul { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Principale">
+  <a class="nav__logo" href="#">Tartine Club</a>
+  <ul><li><a href="#projets">projets</a></li><li><a href="#">à propos</a></li><li><a href="#contact">contact</a></li></ul>
+</nav>
+
+<main>
+  <section class="hero" data-bg="#FDF0E2">
+    <h1 class="titre" aria-label="Bienvenue chez Tartine Club, le coolectif de graphistes cool">
+      <span class="l" aria-hidden="true">Bienvenue <img class="pastille" src="assets/tasse.png" alt=""> chez</span>
+      <span class="l" aria-hidden="true">Tartine <span class="trou" id="depart"></span> Club</span>
+      <span class="l" aria-hidden="true">le coolectif <img class="pastille" src="assets/croissant.png" alt=""></span>
+      <span class="l" aria-hidden="true"><img class="pastille" src="assets/moka.png" alt=""> de graphistes cool</span>
+    </h1>
+    <div class="hero__pied"><span>Léa & Maël · graphistes à Toulouse</span><span>Petit-déj & gaudriole depuis 2026 ↓</span></div>
+  </section>
+
+  <section class="histoire" id="histoire" data-bg="#ECB552">
+    <div class="histoire__colle">
+      <div class="histoire__textes">
+        <article class="etape is-active">
+          <p class="num">01</p>
+          <h2 class="titre">D'abord, du bon pain.</h2>
+          <p>Une tartine réussie commence par une base solide. Chez nous, c'est l'écoute : on prend le temps de comprendre votre histoire, vos envies et vos clients.</p>
+        </article>
+        <article class="etape">
+          <p class="num">02</p>
+          <h2 class="titre">Puis on y étale votre nom.</h2>
+          <p>Couleurs, typos, illustrations : votre identité, étalée généreusement jusqu'aux bords. À deux têtes et quatre mains, on a toujours une idée de plus.</p>
+        </article>
+        <article class="etape">
+          <p class="num">03</p>
+          <h2 class="titre">Un projet prêt à croquer.</h2>
+          <p>Identité, édition, digital : vous repartez avec un projet qui vous ressemble, qui donne faim, et qui tombe toujours du bon côté.</p>
+        </article>
+      </div>
+      <div id="histoire-ancre"></div>
+    </div>
+  </section>
+
+  <section class="plats" id="projets" data-bg="#E79DBF">
+    <h2 class="titre">Plats du jour</h2>
+    <p class="chapo">Quelques projets tout juste sortis du four</p>
+    <div class="bande" tabindex="0" aria-label="Projets, défilement horizontal">
+      <a class="plat" href="#"><div class="visuel" style="background-color:var(--bleu);--img:url(assets/croissant.png)"><span>identité · site</span></div><h3>Avocatio</h3><p>Un cabinet d'avocats qui n'a pas peur de sourire.</p></a>
+      <a class="plat" href="#"><div class="visuel" style="background-color:var(--moutarde);--img:url(assets/moka.png)"><span>identité · supports</span></div><h3>ProLudiQ</h3><p>Une formation QSE ludique… what the phoque ?</p></a>
+      <a class="plat" href="#"><div class="visuel" style="background-color:var(--vert);--img:url(assets/fraise.png)"><span>supports de com</span></div><h3>FFRandonnée Occitanie</h3><p>Le sommet de la réussite.</p></a>
+      <a class="plat" href="#"><div class="visuel" style="background-color:var(--rouge);--img:url(assets/confiture.png)"><span>édition</span></div><h3>La vie de Robert B.</h3><p>L'histoire extraordinaire d'un paysan ordinaire.</p></a>
+      <a class="plat" href="#"><div class="visuel" style="background-color:var(--turquoise);--img:url(assets/tasse.png)"><span>illustration</span></div><h3>Le petit remontant</h3><p>Un podcast qui réveille mieux qu'un double expresso.</p></a>
+    </div>
+  </section>
+
+  <section class="menu-zone" data-bg="#A2D1D4">
+    <div class="menu">
+      <h2 class="titre">La carte</h2>
+      <p class="sous">— servi toute la journée —</p>
+      <dl>
+        <div><dt>Identité visuelle</dt><span class="pointilles"></span><dd>logos, chartes, packagings</dd></div>
+        <div><dt>Édition</dt><span class="pointilles"></span><dd>livres, magazines, mémoires</dd></div>
+        <div><dt>Illustration</dt><span class="pointilles"></span><dd>affiches, fresques, portraits</dd></div>
+        <div><dt>Supports de com</dt><span class="pointilles"></span><dd>flyers, menus, signalétique</dd></div>
+        <div><dt>Digital</dt><span class="pointilles"></span><dd>sites, interfaces, réseaux</dd></div>
+      </dl>
+      <p class="note">Tous nos plats sont servis sur devis. Le café est offert.</p>
+    </div>
+    <img class="sticker" src="assets/confiture.png" alt="" style="--r:12deg;right:8%;top:12%">
+    <img class="sticker" src="assets/beurre.png" alt="" style="--r:-10deg;left:6%;bottom:10%">
+    <button class="grille" type="button" aria-label="Faire griller une tartine"><img class="pain" src="assets/tartine.png" alt=""><img src="assets/grille-pain.png" alt=""></button>
+    <p class="ding" role="status"></p>
+  </section>
+</main>
+
+<footer id="contact" data-bg="#DC472E">
+  <h2 class="titre">Avec nous, votre tartine tombe toujours du bon côté !</h2>
+  <div class="table">
+    <img src="assets/lea-mael.png" alt="Léa et Maël à leur table de travail, ordinateurs ouverts, qui discutent en souriant">
+    <div id="atterrissage"></div>
+    <p class="bulle" aria-hidden="true">Pile du bon côté !</p>
+  </div>
+  <div class="appel">
+    <a class="cta titre" href="mailto:bonjour@tartine-club.fr">On se fait un petit-déj ? →</a>
+    <p>On vous répond sous 48h, croissant compris.</p>
+  </div>
+  <div class="contact">
+    <p><small>bureau</small>Toulouse, France</p>
+    <p><small>mail</small><a href="mailto:bonjour@tartine-club.fr">bonjour@tartine-club.fr</a></p>
+    <p><small>ailleurs</small><a href="#">LinkedIn</a> · <a href="#">Instagram</a></p>
+  </div>
+</footer>
+
+<canvas id="tartine-3d" aria-hidden="true"></canvas>
+<script src="base.js"></script>
+<script type="module" src="tartine3d.js"></script>
+<script>
+  // toaster: each click pops a toast and counts it
+  const grille = document.querySelector(".grille"), ding = document.querySelector(".ding");
+  let fournee = 0;
+  grille.addEventListener("click", () => {
+    grille.classList.remove("saute"); void grille.offsetWidth; grille.classList.add("saute");
+    ding.textContent = `Ding ! Tartine n°${++fournee}`;
+  });
+</script>
+</body>
+</html>

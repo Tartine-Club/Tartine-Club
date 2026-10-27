@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tartine Club — C · La table</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Hero: Léa & Maël sit in front of a title too big for the screen */
+  .hero { background: var(--bleu); min-height: 100svh; padding: 110px 0 0; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+  .hero h1 {
+    font-size: clamp(5rem, 24vw, 26rem); color: var(--creme); text-align: center; white-space: nowrap;
+    line-height: .8; margin-bottom: -.12em;
+  }
+  .hero h1 span { display: block; }
+  .scene { position: relative; width: min(100%, 1300px); margin: -14vw auto 0; z-index: 2; }
+  .scene .baseline { position: absolute; left: 0; right: 0; top: -40px; text-align: center; font-weight: 500; color: var(--brun); }
+  #depart { position: absolute; left: 48%; top: 58%; width: 1px; height: 1px; }
+  .hero .sticker { z-index: 3; }
+
+  /* tablecloth strip with a marquee */
+  .nappe { padding: 0; background: url("assets/motif.png") center / 600px auto repeat; overflow: hidden; }
+  .defile { display: flex; width: max-content; animation: defile 30s linear infinite; padding: 22px 0; }
+  .defile span { font: clamp(1.6rem, 3vw, 2.6rem) var(--titre); background: var(--creme); padding: 6px 26px; border-radius: 99px; margin-right: 20px; white-space: nowrap; }
+  @keyframes defile { to { translate: -50%; } }
+
+  .intro { display: grid; grid-template-columns: 1fr 1fr; gap: 6%; align-items: start; }
+  .intro h2 { font-size: clamp(2.8rem, 6vw, 5.5rem); }
+  .intro p { font-size: 1.3rem; }
+
+  /* Bento of projects */
+  .projets h2 { font-size: clamp(3rem, 9vw, 8rem); color: var(--creme); margin-bottom: 48px; }
+  .bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(220px, 24vw); gap: 20px; }
+  .bento a { position: relative; border-radius: 26px; overflow: hidden; text-decoration: none; display: flex; align-items: flex-end; padding: 20px; transition: rotate .25s; }
+  .bento a:hover { rotate: -1.5deg; }
+  .bento a:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+  .bento a:nth-child(4) { grid-column: span 2; }
+  .bento .etiq { background: var(--creme); border-radius: 16px; padding: 10px 16px; }
+  .bento h3 { font: 1.6rem var(--titre); }
+  .bento p { font-size: .9rem; }
+
+  /* Services: big numbered list, a sticker follows the hovered line */
+  .services ol { list-style: none; padding: 0; counter-reset: s; }
+  .services li { counter-increment: s; display: grid; grid-template-columns: 4rem 1fr auto; align-items: baseline; gap: 16px; border-top: 3px solid; padding: 22px 0; }
+  .services li::before { content: "0" counter(s); font-weight: 700; }
+  .services li strong { font: clamp(2.2rem, 6vw, 5rem) var(--titre); font-weight: 400; line-height: 1; }
+  .services li span { font-size: 1rem; max-width: 26ch; text-align: right; }
+  .services li img { position: absolute; right: 30%; width: 130px; opacity: 0; scale: .6; rotate: -12deg; transition: .3s cubic-bezier(.3, 1.6, .5, 1); pointer-events: none; }
+  .services li { position: relative; }
+  .services li:hover img { opacity: 1; scale: 1; rotate: 6deg; }
+
+  /* Footer: the tartine lands on a plate */
+  footer { text-align: center; padding-bottom: 40px; }
+  .assiette {
+    width: min(70vw, 420px); aspect-ratio: 1; margin: 0 auto 48px; border-radius: 50%; position: relative;
+    background: radial-gradient(circle, var(--creme) 54%, #f3dcc4 55% 58%, var(--creme) 59%);
+    box-shadow: 0 30px 50px rgb(125 53 34 / .3);
+  }
+  #atterrissage { position: absolute; inset: 50%; }
+  footer h2 { font-size: clamp(2.4rem, 7vw, 6rem); max-width: 16ch; margin: 0 auto 64px; }
+  footer .contact { justify-content: center; border-top: 2px solid; padding-top: 24px; text-align: left; }
+
+  @media (max-width: 760px) {
+    .hero { min-height: auto; padding-top: 140px; }
+    .hero h1 { font-size: 30vw; }
+    .scene { margin-top: -20vw; }
+    .intro { grid-template-columns: 1fr; }
+    .bento { grid-template-columns: 1fr 1fr; grid-auto-rows: 200px; }
+    .bento a:nth-child(1), .bento a:nth-child(4) { grid-column: span 2; grid-row: span 1; }
+    .services li { grid-template-columns: 2.5rem 1fr; } .services li span { grid-column: 2; text-align: left; }
+    .nav ul { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Principale">
+  <a class="nav__logo" href="#">Tartine Club</a>
+  <ul><li><a href="#projets">projets</a></li><li><a href="#">à propos</a></li><li><a href="#contact">contact</a></li></ul>
+</nav>
+
+<main>
+  <section class="hero" data-bg="#3C86BD">
+    <h1 class="titre"><span>Tartine</span><span>Club</span></h1>
+    <div class="scene">
+      <img src="assets/lea-mael.png" alt="Léa et Maël, les deux graphistes du collectif, à leur table de travail">
+      <span id="depart"></span>
+      <img class="sticker" src="assets/tasse.png" alt="" style="--w:clamp(90px,12vw,170px);--r:-6deg;left:3%;bottom:6%">
+      <img class="sticker" src="assets/confiture.png" alt="" style="--w:clamp(60px,7vw,100px);--r:8deg;right:4%;bottom:7%">
+    </div>
+  </section>
+
+  <div class="nappe" aria-hidden="true">
+    <div class="defile">
+      <span>le coolectif de graphistes cool</span><span>petit-déj & gaudriole</span><span>Toulouse</span><span>identité · édition · illustration</span>
+      <span>le coolectif de graphistes cool</span><span>petit-déj & gaudriole</span><span>Toulouse</span><span>identité · édition · illustration</span>
+    </div>
+  </div>
+
+  <section class="intro" data-bg="#FDF0E2">
+    <h2 class="titre">On prend le petit-déj très au sérieux.</h2>
+    <p>Tartine Club est un collectif fondé en 2026 à Toulouse par Léa Dutarte et Maël Belviso. On dessine des identités, des éditions et des illustrations généreuses, pour des gens qui ont envie qu'on se souvienne d'eux.</p>
+    <img class="sticker" src="assets/croissant.png" alt="" style="--w:150px;--r:-12deg;right:6%;bottom:-40px">
+  </section>
+
+  <section class="projets" id="projets" data-bg="#579E6D">
+    <h2 class="titre">Ça sort du four</h2>
+    <div class="bento">
+      <a href="#" style="background:var(--rouge)"><div class="etiq"><h3>Avocatio</h3><p>identité · site</p></div></a>
+      <a href="#" style="background:var(--moutarde)"><div class="etiq"><h3>ProLudiQ</h3><p>identité · supports</p></div></a>
+      <a href="#" style="background:var(--rose)"><div class="etiq"><h3>Robert B.</h3><p>édition</p></div></a>
+      <a href="#" style="background:var(--turquoise)"><div class="etiq"><h3>FFRandonnée Occitanie</h3><p>supports de com</p></div></a>
+    </div>
+  </section>
+
+  <section class="services" data-bg="#ECB552">
+    <ol>
+      <li><strong>Identité</strong><span>logos, chartes, packagings</span><img src="assets/confiture.png" alt=""></li>
+      <li><strong>Édition</strong><span>livres, magazines, mémoires</span><img src="assets/beurre.png" alt=""></li>
+      <li><strong>Illustration</strong><span>affiches, fresques, portraits</span><img src="assets/fraise.png" alt=""></li>
+      <li><strong>Digital</strong><span>sites, interfaces, réseaux</span><img src="assets/grille-pain.png" alt=""></li>
+    </ol>
+  </section>
+</main>
+
+<footer id="contact" data-bg="#A2D1D4">
+  <div class="assiette"><span id="atterrissage"></span></div>
+  <h2 class="titre">Avec nous, votre tartine tombe toujours du bon côté !</h2>
+  <div class="contact">
+    <p><small>bureau</small>Toulouse, France</p>
+    <p><small>mail</small><a href="mailto:bonjour@tartine-club.fr">bonjour@tartine-club.fr</a></p>
+    <p><small>ailleurs</small><a href="#">LinkedIn</a> · <a href="#">Instagram</a></p>
+  </div>
+</footer>
+
+<img id="tartine-voyage" src="assets/tartine.png" alt="">
+<script src="base.js"></script>
+</body>
+</html>

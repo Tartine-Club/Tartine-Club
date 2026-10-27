@@ -50,17 +50,21 @@ function frame(t) {
   // 1. grows inside the title (pushing the words), then flies to the story
   const p1 = clamp(y / debut);
   document.documentElement.style.setProperty("--pousse", clamp(p1 / 0.35).toFixed(3));
+  let etale = 1, croque = 0;
   if (y <= debut) {
     const k = ease(clamp((p1 - 0.35) / 0.65));
     r = melange(rect(trou), rect(ancre), k);
     ry = lerp(0.35, Math.PI, k * spin);
+    etale = 0;
   // 2. scrollytelling: crumb side, turns to show the jam, gets ready to fall
   } else if (y <= fin) {
     const q = (y - debut) / (fin - debut);
     r = rect(ancre);
-    ry = Math.PI + ease(clamp(q / 0.45)) * Math.PI * spin;
-    rx = lerp(-0.35, POSEE, ease(clamp((q - 0.6) / 0.4)));
-    // steps follow the model: crumb side, logo revealed (ry done at 0.45), lying down (from 0.6)
+    // 1: bare bread turns to its face · 2: lies down, the knife spreads the jam · 3: bitten until only crumbs remain
+    ry = Math.PI + ease(clamp(q / 0.3)) * Math.PI * spin;
+    rx = lerp(-0.35, POSEE, ease(clamp((q - 0.3) / 0.12)));
+    etale = clamp((q - 0.36) / 0.24);
+    croque = clamp((q - 0.64) / 0.26); // only crumbs left from 0.9, before the fall
     const etape = q < 0.3 ? 0 : q < 0.62 ? 1 : 2;
     etapes.forEach((e, i) => e.classList.toggle("is-active", i === etape));
   // 3. drops out of the bottom of the screen
@@ -70,6 +74,7 @@ function frame(t) {
     r = { x: a.x, y: lerp(a.y + (y - fin), vh + a.s, ease(q)), s: a.s };
     rx = POSEE - q * 3 * Math.PI * spin;
     ry = 0;
+    croque = 1; // the crumbs fall out of the screen
     // text leaves before the next section's colour arrives (brun on the next bg can fail contrast)
     etapes.forEach((e) => e.classList.remove("is-active"));
   // 4. falls from above onto the footer table, two flips, lands jam up
@@ -82,6 +87,9 @@ function frame(t) {
     ry = 0;
   }
   document.body.classList.toggle("is-posee", y >= chute && y >= atterrit - 2); // footer reacts to the landing
+  // phase 4 keeps the defaults: a fresh tartine, jam spread, not bitten
+  tartine.etaler(etale);
+  tartine.croquer(croque);
   tartine.position.set(r.x, -r.y, 0);
   tartine.scale.setScalar(r.s / LARGEUR);
   tartine.rotation.set(rx, ry, rz);

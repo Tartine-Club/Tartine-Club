@@ -63,7 +63,7 @@
     <label>Taille du grain (px) <output id="o-uTaille"></output><input type="range" id="uTaille" min="1" max="5" step="0.5"></label>
     <label>Ombres chaudes <output id="o-uChaud"></output><input type="range" id="uChaud" min="0" max="1" step="0.05"></label>
     <label>Tons (0 = dégradé lisse) <output id="o-uTons"></output><input type="range" id="uTons" min="0" max="6" step="1"></label>
-    <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="confiture"> Couche de confiture (masquée dans le .blend)</label>
+    <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="confiture" checked> Confiture étalée</label>
   </form>
 </main>
 
@@ -80,8 +80,7 @@
   eclairer(scene, renderer);
   const tartine = await creerTartine();
   scene.add(tartine);
-  const jam = tartine.getObjectByName("Jam");
-  document.getElementById("confiture").addEventListener("change", (e) => (jam.visible = e.target.checked));
+  document.getElementById("confiture").addEventListener("change", (e) => tartine.etaler(e.target.checked ? 1 : 0));
 
   // sliders <-> shader uniforms
   const cles = ["uGrain", "uTaille", "uChaud", "uTons"];

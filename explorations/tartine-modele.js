@@ -121,6 +121,8 @@ export async function creerTartine() {
     pain.visible = jam.visible = n < 5;
     restes.children.forEach((m) => (m.visible = m.userData.bouchee < n));
   };
+  tartine.pain = pain; // painted on by the hero's jam jars
+  tartine.jam = jam;   // recoloured with the chosen jar
   tartine.etaler(1);
   tartine.croquer(0);
   return tartine;

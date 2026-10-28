@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tartine Club — collectif de graphistes à Toulouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;700;900&display=swap" rel="stylesheet">
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+<style>
+  @font-face { font-family: "Faro"; src: local("Faro Display Lucky"), url("assets/fonts/Faro-DisplayLucky.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "PP Neue Montreal"; src: url("assets/fonts/PPNeueMontreal-Book.otf") format("opentype"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "PP Neue Montreal"; src: url("assets/fonts/PPNeueMontreal-Medium.otf") format("opentype"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "PP Neue Montreal"; src: url("assets/fonts/PPNeueMontreal-Bold.otf") format("opentype"); font-weight: 700; font-display: swap; }
+
+  :root {
+    --creme: #fdf0e2; --creme-clair: #fdf8f3; --rouge: #f34040; --brun: #441f15; --encre: #262626;
+    --moutarde: #ecb552; --vert: #579e6d; --carte-fond: #f8f4f0;
+    --titre: "Faro", "Arial Black", sans-serif;
+    --texte: "PP Neue Montreal", "Helvetica Neue", Arial, sans-serif;
+    --geist: "Geist", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--creme-clair); color: var(--encre); font-family: var(--texte); overflow-x: hidden; }
+  img { display: block; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 3px solid var(--rouge); outline-offset: 3px; }
+  .titre { font-family: var(--titre); font-weight: 400; line-height: normal; }
+  .label { font: 700 13px var(--texte); }
+  .pastille { display: inline-block; background: #fff; color: var(--encre); border-radius: 999px; padding: 8px 16px; font: 500 16px var(--texte); letter-spacing: -.02em; white-space: nowrap; }
+  /* crop of the breakfast sheet, numbers straight from the design */
+  .crop { position: relative; overflow: hidden; }
+  .crop img { position: absolute; max-width: none; }
+
+  /* Header */
+  .entete { position: sticky; top: 0; z-index: 50; background: var(--creme); display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+  .entete__liens, .entete__droite { width: 200px; display: flex; gap: 8px; }
+  .entete__droite { justify-content: flex-end; }
+  .cta { display: inline-flex; align-items: center; gap: 10px; background: #f23f3f; color: #fff; border-radius: 999px; padding: 8px 8px 8px 18px; font: 500 16px var(--texte); white-space: nowrap; transition: scale .2s; }
+  .cta:hover { scale: 1.04; }
+
+  /* 01 Hero */
+  .hero { position: relative; background: var(--creme); height: 984px; padding: 52px 40px 0; }
+  .hero__vague { position: absolute; left: 0; top: 764px; width: 100%; height: auto; pointer-events: none; }
+  .hero__titre { position: relative; width: min(1202px, 100%); height: 295px; margin: 0 auto; text-align: center; color: var(--rouge); font: min(9.72vw, 140px) var(--titre); }
+  .hero__titre h1 { font: inherit; text-transform: uppercase; line-height: .83; padding-top: 8px; white-space: nowrap; }
+  .hero__titre .pastille { position: absolute; font-size: 18px; letter-spacing: -.02em; }
+  .hero__sous { position: absolute; left: 50%; translate: -50% 0; top: 322px; width: min(810px, 100%); font: 700 18px/20px var(--texte); text-transform: uppercase; color: var(--brun); }
+  .hero__tartine { position: absolute; z-index: 5; left: 50%; translate: -50% 0; top: 446px; width: min(930px, 92vw); aspect-ratio: 930 / 700; border-radius: 40px; }
+  .hero__tartine canvas { display: block; width: 100%; height: 100%; }
+  .hero__aide { position: absolute; z-index: 6; left: calc(50% + 330px); top: 560px; rotate: 5deg; font: 500 14px var(--texte); color: var(--creme); background: var(--brun); padding: 8px 14px; border-radius: 999px; }
+
+  /* 02 Ribbon */
+  .bandeau { position: relative; height: 298px; overflow: hidden; display: grid; place-items: center; }
+  .ruban { rotate: 3deg; width: 120vw; background: var(--moutarde); padding: 22px 0; overflow: hidden; }
+  .ruban__piste { display: flex; width: max-content; will-change: transform; }
+  .ruban__piste span { font: 44px var(--titre); color: var(--creme); white-space: pre; padding-right: .5em; }
+
+  /* 04 About */
+  .apropos { position: relative; padding: 118px 40px 120px; display: flex; flex-direction: column; align-items: center; gap: 24px; min-height: 864px; justify-content: center; }
+  .apropos .pastille { background: var(--moutarde); color: var(--brun); font-size: 18px; rotate: -3.4deg; }
+  .apropos p { font: 52px/56px var(--titre); text-align: center; width: min(1147px, 100%); color: var(--encre); }
+  .apropos__illu { position: absolute; cursor: pointer; background: none; border: 0; padding: 0; transition: scale .25s cubic-bezier(.3, 1.6, .5, 1); }
+  .apropos__illu .crop { pointer-events: none; }
+  .confiture { left: -107px; top: 509px; rotate: -8.4deg; }
+  .grille { right: -79px; top: 25px; transform: scaleY(-1) rotate(173.45deg); }
+  .toast-volant { position: absolute; width: 120px; pointer-events: none; z-index: 3; }
+
+  /* 06 Projects */
+  .projets { padding: 120px 40px; display: flex; flex-direction: column; gap: 48px; }
+  .projets__titre { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+  .projets__titre .titre { font-size: 80px; color: var(--encre); white-space: pre; }
+  .grille-projets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 24px; }
+  .projet { display: flex; flex-direction: column; gap: 14px; position: relative; }
+  .projet__visuel { position: relative; height: 480px; border-radius: 16px; overflow: hidden; background: #d9d4cc; }
+  .projet__visuel img { width: 100%; height: 100%; object-fit: cover; transition: scale .6s cubic-bezier(.2, .8, .2, 1); }
+  .projet__sticker { position: absolute; right: -20px; top: -20px; width: 90px; translate: 30px -30px; rotate: 20deg; opacity: 0; transition: translate .35s cubic-bezier(.3, 1.6, .5, 1), opacity .2s, rotate .35s; pointer-events: none; z-index: 2; }
+  .projet:hover .projet__visuel img, .projet:focus-visible .projet__visuel img { scale: 1.06; }
+  .projet:hover .projet__sticker, .projet:focus-visible .projet__sticker { translate: 0 0; opacity: 1; rotate: -8deg; }
+  .projet__legende { display: flex; justify-content: space-between; align-items: center; }
+  .projet__legende strong { display: block; font: 700 20px var(--texte); }
+  .projet__legende span { font: 400 14px var(--texte); }
+  .fleche { width: 40px; height: 40px; border-radius: 50%; background: var(--encre); color: #fff; display: grid; place-items: center; font: 700 18px var(--geist); transition: rotate .35s; flex: none; }
+  .projet:hover .fleche, .projet:focus-visible .fleche { rotate: 45deg; }
+  .projets__suite { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+  .projets__suite p { font: 700 44px var(--texte); }
+
+  /* 07 La carte */
+  .carte { position: relative; height: 2794px; }
+  .carte__scene { position: absolute; left: 50%; top: 0; width: 1440px; height: 2794px; translate: -50% 0; transform-origin: top center; }
+  .carte__tete { position: absolute; left: 0; right: 0; top: 120px; text-align: center; }
+  .carte__tete h2 { font: 900 120px/120px var(--geist); margin-top: 24px; }
+  .carte__trait { position: absolute; max-width: none; clip-path: inset(0 0 calc(100% - var(--coule, 0%)) 0); }
+  .plat { position: absolute; width: 334px; background: #fff; border: 1px solid #000; padding: 24px; display: flex; flex-direction: column; gap: 20px; rotate: 2deg; }
+  .plat h3 { font: 900 34px var(--geist); color: var(--encre); white-space: nowrap; }
+  .plat p { font: 400 16px var(--geist); }
+  .plat .crop { rotate: -2deg; }
+  .plat img.pointilles { width: 100%; height: 2px; }
+  .carte__moka { position: absolute; left: -21px; top: 99px; rotate: 57.71deg; }
+  .carte__tasse { position: absolute; left: 518px; top: 2329px; rotate: -9.54deg; width: 466px; height: 311px; object-fit: cover; }
+  .carte__note { position: absolute; left: 864px; top: 2630px; translate: -50% 0; rotate: -17.81deg; font: 400 15px var(--geist); white-space: nowrap; }
+
+  /* 08 Testimonials */
+  .avis { background: linear-gradient(var(--creme), var(--creme-clair)); padding: 120px 40px; display: flex; flex-direction: column; align-items: center; gap: 40px; text-align: center; }
+  .avis .titre { font-size: 80px; }
+  .avis__pile { display: grid; width: min(741px, 100%); }
+  .avis__item { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; gap: 28px; visibility: hidden; }
+  .avis__item.is-active { visibility: visible; }
+  .avis__item blockquote { font: 400 40px var(--texte); }
+  .avis__nav { display: flex; align-items: center; gap: 20px; font: 500 16px var(--geist); }
+  .avis__nav button { width: 56px; height: 56px; border-radius: 50%; border: 1.5px solid var(--encre); background: #fff; font: 700 22px var(--geist); color: var(--encre); cursor: pointer; transition: scale .2s; }
+  .avis__nav button:hover { scale: 1.08; }
+
+  /* 10 Landing */
+  .atterrissage { position: relative; height: 686px; overflow: hidden; padding: 80px 40px; text-align: center; }
+  .atterrissage__fond { position: absolute; left: -1.39%; top: -3.09%; width: 100%; height: 137.26%; max-width: none; transform-origin: 50% 80%; }
+  .atterrissage h2 { position: relative; font: 44px var(--titre); }
+  .atterrissage h2 span { color: var(--rouge); }
+  .atterrissage__tartine { position: absolute; left: calc(50% - 131px); top: 310px; }
+  .atterrissage .pastille { position: absolute; left: calc(50% - 83px); top: 448px; background: var(--brun); color: var(--creme); font-size: 18px; rotate: 8deg; }
+
+  /* Footer */
+  .pied { position: relative; padding: 48px 40px 24px; }
+  .pied__nappe { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .pied__carte { position: relative; background: var(--carte-fond); border-radius: 12px; height: 703px; overflow: hidden; padding: 80px 40px 24px; display: flex; flex-direction: column; gap: 48px; color: #1e1e1e; }
+  .pied__haut { display: flex; justify-content: space-between; gap: 40px; }
+  .pied__haut .titre { font-size: 44px; width: 483px; }
+  .pied__cta { display: inline-flex; align-items: center; gap: 6px; background: #1e1e1e; color: var(--creme); border-radius: 999px; padding: 6px 6px 6px 14px; font: 500 14px var(--texte); margin-top: 20px; }
+  .pied__liens { display: flex; gap: 64px; }
+  .pied__liens strong { display: block; font: 700 13px var(--texte); margin-bottom: 8px; }
+  .pied__liens a, .pied__liens span { display: block; font: 400 15px var(--texte); }
+  .pied__legal { display: flex; justify-content: space-between; font: 400 13px var(--texte); }
+  .pied__logo { position: absolute; left: 40px; top: 390px; width: calc(100% - 80px); height: auto; }
+
+  @media (max-width: 900px) {
+    .entete { padding: 14px 16px; } .entete__liens { display: none; } .entete__droite, .entete__liens { width: auto; }
+    .hero { height: auto; padding: 32px 16px 0; }
+    .hero__titre { height: auto; padding-bottom: 80px; } .hero__titre .pastille { font-size: 13px; }
+    .hero__sous { position: static; translate: none; margin: 16px auto 0; font-size: 14px; line-height: 17px; }
+    .hero__tartine { position: relative; top: 0; translate: none; left: 0; margin: 0 auto; }
+    .hero__aide { position: relative; top: 0; left: 0; display: table; margin: 0 auto 40px; }
+    .apropos p { font-size: 30px; line-height: 34px; } .apropos__illu { display: none; }
+    .grille-projets { grid-template-columns: 1fr; } .projets__titre, .projets__suite { flex-direction: column; align-items: flex-start; }
+    .projets__titre .titre, .avis .titre { font-size: 44px; } .projets__suite p { font-size: 26px; }
+    .avis__item blockquote { font-size: 26px; }
+    .pied__haut { flex-direction: column; } .pied__liens { flex-wrap: wrap; gap: 24px; } .pied__carte { height: auto; padding-bottom: 260px; }
+    .pied__haut .titre { width: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="entete">
+  <nav class="entete__liens" aria-label="Principale">
+    <a class="pastille" href="#projets">Projets</a>
+    <a class="pastille" href="#">À propos</a>
+  </nav>
+  <a href="#" aria-label="Tartine Club, accueil"><img src="assets/v3/logo.svg" width="81.7035" height="27.6634" alt=""></a>
+  <div class="entete__droite"><a class="cta" href="#contact">On se fait un dej ? <img src="assets/v3/cta-rond.svg" width="24" height="24" alt=""></a></div>
+</header>
+
+<main>
+  <section class="hero">
+    <img class="hero__vague" src="assets/v3/hero-vague.svg" width="1440" height="392.998" alt="">
+    <div class="hero__titre">
+      <h1 class="titre" id="titre-hero">Bienvenue chez<br>Tartine Club</h1>
+      <span class="pastille js-pastille" style="left:15.2%;top:16px;rotate:8deg;background:var(--brun);color:var(--creme)">Collectif de graphistes</span>
+      <span class="pastille js-pastille" style="left:72.9%;top:8px;rotate:-3.4deg;background:var(--moutarde);color:var(--brun)">Branding et identité visuelle</span>
+      <span class="pastille js-pastille" style="left:36.7%;top:256px;rotate:-2.03deg;background:var(--vert);color:var(--creme)">Site internet et print</span>
+      <p class="hero__sous">Le coolectif de graphistes Léa Dutarte, graphiste et UX/UI designer freelance, à votre service pour créer des designs inspirants et craquants</p>
+    </div>
+    <div class="hero__tartine" id="tartine" role="button" tabindex="0" aria-label="Tartine en 3D : cliquez pour changer de tartine, glissez pour la faire tourner"></div>
+    <p class="hero__aide">Clic pour changer de tartine · glisser pour la tourner</p>
+  </section>
+
+  <section class="bandeau" aria-label="Le seul studio avec qui la tartine tombe toujours du bon côté">
+    <div class="ruban" aria-hidden="true"><div class="ruban__piste" id="ruban">
+      <span>LE SEUL STUDIO AVEC QUI LA TARTINE TOMBE TOUJOURS DU BON CÔTÉ  •  </span><span>LE SEUL STUDIO AVEC QUI LA TARTINE TOMBE TOUJOURS DU BON CÔTÉ  •  </span>
+    </div></div>
+  </section>
+
+  <section class="apropos" id="apropos">
+    <span class="pastille">Késsessé ?</span>
+    <p id="texte-apropos">Tartine Club, c'est un collectif fondé en 2026 par Maël Belviso et Léa Dutarte à Toulouse. Nous accordons une grande importance aux identités croustillantes, au petit-déjeuner et à la gaudriole. Entrez dans notre univers coloré, où l'on ne s'ennuie jamais !</p>
+    <div class="apropos__illu confiture js-approche" aria-hidden="true">
+      <div class="crop" style="width:214.423px;height:293.065px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:236.61%;left:-135.88%;top:-119.69%;width:485.09%"></div>
+    </div>
+    <button class="apropos__illu grille js-approche" id="grille" type="button" aria-label="Faire sauter des tartines du grille-pain">
+      <div class="crop" style="width:276.04px;height:274.248px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:203.87%;left:-94.85%;top:-7.46%;width:303.82%"></div>
+    </button>
+  </section>
+
+  <section class="projets" id="projets">
+    <div class="projets__titre">
+      <div><p class="label">PROJETS À LA UNE</p><h2 class="titre">ILS SE SONT
+FAIT TARTINER</h2></div>
+      <a class="pastille" href="#">Voir tous nos projets →</a>
+    </div>
+    <div class="grille-projets">
+      <a class="projet" href="#"><img class="projet__sticker" src="assets/croissant.png" alt=""><div class="projet__visuel"><img src="assets/v3/projet-1.png" alt="Site d'Avocatio affiché sur un ordinateur portable"></div><div class="projet__legende"><div><strong>AVOCATIO</strong><span>Identité · Site · Conseil</span></div><span class="fleche" aria-hidden="true">↗</span></div></a>
+      <a class="projet" href="#"><img class="projet__sticker" src="assets/fraise.png" alt=""><div class="projet__visuel"><img src="assets/v3/projet-2.png" alt="Affiche ProLudiQ dans la rue"></div><div class="projet__legende"><div><strong>PROLUDIQ</strong><span>Identité · Formation</span></div><span class="fleche" aria-hidden="true">↗</span></div></a>
+      <a class="projet" href="#"><img class="projet__sticker" src="assets/moka.png" alt=""><div class="projet__visuel"><img src="assets/v3/projet-3.png" alt="Camion floqué FFRandonnée Occitanie"></div><div class="projet__legende"><div><strong>FFRANDONNÉE OCCITANIE</strong><span>Supports de com · Sport</span></div><span class="fleche" aria-hidden="true">↗</span></div></a>
+      <a class="projet" href="#"><img class="projet__sticker" src="assets/confiture.png" alt=""><div class="projet__visuel"><img src="assets/v3/projet-3.png" alt="Camion The Traveling Stringer"></div><div class="projet__legende"><div><strong>THE TRAVELING STRINGER</strong><span>Branding · Sport</span></div><span class="fleche" aria-hidden="true">↗</span></div></a>
+      <a class="projet" href="#"><img class="projet__sticker" src="assets/beurre.png" alt=""><div class="projet__visuel"><img src="assets/v3/projet-1.png" alt="Site Goudes Life sur un ordinateur portable"></div><div class="projet__legende"><div><strong>GOUDES LIFE</strong><span>Branding &amp; Site Web · Luxe</span></div><span class="fleche" aria-hidden="true">↗</span></div></a>
+      <a class="projet" href="#"><img class="projet__sticker" src="assets/tasse.png" alt=""><div class="projet__visuel"><img src="assets/v3/projet-2.png" alt="Affiche Smash Pickleball dans la rue"></div><div class="projet__legende"><div><strong>SMASH PICKLEBALL</strong><span>Identité · Sport</span></div><span class="fleche" aria-hidden="true">↗</span></div></a>
+    </div>
+    <div class="projets__suite"><p>ON POURRAIT CONTINUER,<br>MAIS IL Y A UNE PAGE ENTIÈRE POUR ÇA.</p><a class="pastille" href="#">Tous les projets</a></div>
+  </section>
+
+  <section class="carte" id="carte" aria-labelledby="titre-carte">
+    <div class="carte__scene" id="carte-scene">
+      <div class="carte__tete"><p class="label">CE QU'ON SERT</p><h2 id="titre-carte">LA CARTE</h2></div>
+      <img class="carte__trait" src="assets/v3/cafe-trait.svg" width="1086" height="2058.9" alt="" style="left:177px;top:312px">
+      <img class="carte__trait" src="assets/v3/cafe-trait-haut.svg" width="961.843" height="620.121" alt="" style="left:246px;top:312px">
+      <div class="carte__moka" aria-hidden="true"><div class="crop" style="width:318.684px;height:424.764px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:204.91%;left:-8.1%;top:-93.97%;width:409.69%"></div></div>
+      <article class="plat js-plat" style="left:293px;top:478px"><div class="crop" style="width:108.017px;height:147.633px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:236.61%;left:-135.88%;top:-119.69%;width:485.09%"></div><h3>Identité visuelle</h3><img class="pointilles" src="assets/v3/pointilles.svg" width="283.881" height="2" alt=""><p>logos, chartes, packagings</p></article>
+      <article class="plat js-plat" style="left:95px;top:1117px"><div class="crop" style="width:107.685px;height:135.713px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:334.25%;left:-317.22%;top:-203.05%;width:631.87%"></div><h3>Édition</h3><img class="pointilles" src="assets/v3/pointilles.svg" width="283.881" height="2" alt=""><p>livres, magazines, mémoires</p></article>
+      <article class="plat js-plat" style="left:949px;top:1007px"><div class="crop" style="width:164.358px;height:138.957px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:251.39%;left:-211.13%;top:-136.37%;width:318.81%"></div><h3>Illustration</h3><img class="pointilles" src="assets/v3/pointilles.svg" width="283.881" height="2" alt=""><p>affiches, fresques, portraits</p></article>
+      <article class="plat js-plat" style="left:457px;top:1443px"><div class="crop" style="width:186.152px;height:135.484px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:257.83%;left:-181.48%;top:-35.94%;width:281.48%"></div><h3>Supports de com</h3><img class="pointilles" src="assets/v3/pointilles.svg" width="283.881" height="2" alt=""><p>flyers, menus, signalétique</p></article>
+      <article class="plat js-plat" style="left:634px;top:1852px"><div class="crop" style="width:172.463px;height:171.343px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:203.87%;left:-94.85%;top:-7.46%;width:303.82%"></div><h3>Digital</h3><img class="pointilles" src="assets/v3/pointilles.svg" width="283.881" height="2" alt=""><p>sites, interfaces, réseaux</p></article>
+      <img class="carte__tasse js-plat" id="tasse" src="assets/v3/tasse-fleurie.png" alt="">
+      <p class="carte__note">Tous nos plats sont servis sur devis. Le café est offert.</p>
+    </div>
+  </section>
+
+  <section class="avis" aria-labelledby="titre-avis">
+    <p class="label">TÉMOIGNAGES</p>
+    <h2 class="titre" id="titre-avis">ILS EN REDEMANDENT</h2>
+    <div class="avis__pile" id="avis" aria-live="polite">
+      <figure class="avis__item is-active"><blockquote>« Citation client à venir : une phrase courte et sincère sur la collaboration. »</blockquote><figcaption class="pastille">Prénom Nom · Fonction, Entreprise</figcaption></figure>
+      <figure class="avis__item"><blockquote>« Deuxième citation client à venir, sur le même ton. »</blockquote><figcaption class="pastille">Prénom Nom · Fonction, Entreprise</figcaption></figure>
+      <figure class="avis__item"><blockquote>« Troisième citation client à venir, courte et sincère. »</blockquote><figcaption class="pastille">Prénom Nom · Fonction, Entreprise</figcaption></figure>
+    </div>
+    <div class="avis__nav">
+      <button type="button" data-pas="-1" aria-label="Avis précédent">←</button>
+      <span><span id="avis-num">1</span> / 3</span>
+      <button type="button" data-pas="1" aria-label="Avis suivant">→</button>
+    </div>
+  </section>
+
+  <section class="atterrissage" id="atterrissage">
+    <img class="atterrissage__fond" id="lea-mael" src="assets/v3/atterrissage.png" alt="Léa et Maël à leur table de travail, ordinateurs ouverts">
+    <h2>AVEC NOUS, VOTRE TARTINE TOMBE<br><span>TOUJOURS DU BON CÔTÉ !</span></h2>
+    <div class="atterrissage__tartine" id="tartine-tombe" aria-hidden="true"><div class="crop" style="width:262.122px;height:197.411px"><img src="assets/v3/planche-petit-dej.png" alt="" style="height:301.05%;left:-6.87%;top:-41.72%;width:340.09%"></div></div>
+    <a class="pastille" id="bulle" href="#contact">On se fait un dej ?</a>
+  </section>
+</main>
+
+<footer class="pied" id="contact">
+  <img class="pied__nappe" src="assets/v3/footer-nappe.png" alt="">
+  <div class="pied__carte">
+    <div class="pied__haut">
+      <div><p class="titre">Ça vous a ouvert l'appétit ?</p><a class="pied__cta" href="mailto:bonjour@tartine-club.fr">On se fait un dej ? <img src="assets/v3/footer-rond.svg" width="14.4" height="14.4" alt=""></a></div>
+      <div class="pied__liens">
+        <div><strong>Menu</strong><a href="#projets">Projets</a><a href="#">À propos</a><a href="#contact">Contact</a></div>
+        <div><strong>Ailleurs</strong><a href="#">Instagram ↗</a><a href="#">LinkedIn ↗</a></div>
+        <div><strong>Bureau</strong><span>Toulouse, France</span><a href="mailto:bonjour@tartine-club.fr">bonjour@tartine-club.fr</a></div>
+      </div>
+    </div>
+    <img src="assets/v3/footer-pointilles.svg" width="1280" height="2" alt="" style="width:100%">
+    <div class="pied__legal"><span>© 2026 Tartine Club · Fait main à Toulouse</span><a href="#">Mentions légales · Confidentialité</a></div>
+    <img class="pied__logo" src="assets/v3/footer-logo.svg" width="1280" height="461" alt="">
+  </div>
+</footer>
+
+<script type="module">
+  import { mountTartines } from "./tartine-toon.js";
+  mountTartines(document.getElementById("tartine"), [
+    { bread: "classique", jam: "bosselee", flavor: "fraise" },
+    { bread: "campagne", jam: "coulante", flavor: "fraise" },
+    { bread: "brioche", jam: "lisse", flavor: "cerise" },
+    { bread: "biscotte", jam: "morceaux", flavor: "fraise" },
+    { bread: "baguette", jam: "tourbillon", flavor: "myrtille" },
+    { bread: "classique", jam: "cuilleree", flavor: "abricot" },
+  ]);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="accueil-v3.js"></script>
+</body>
+</html>

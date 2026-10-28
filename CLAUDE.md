@@ -18,6 +18,8 @@
 - Figma (wireframes, pas la DA finale) : https://www.figma.com/design/AMvMCQve3b8dv7xblgvikc/Tartine-Club
   - Page « Design recherches » : ACCUEIL `1:13`, PROJETS `1:135`, PAGE PROJET `1:387`, A PROPOS `1:246`, CONTACT `1:312`, écran d'intro `1:2`, favicons `1:443` à `1:471`
   - Page « Archives Lea » `1:477` : contenu `À REMPLIR`
+  - Page « Wireframes V2 » `34:2` : nouveaux wireframes desktop : accueil `35:4`, projets `37:111`, page projet `37:294`, à propos `37:448`, contact `37:602`, composants locaux dans « Composants wireframe » `34:3`. Annotations bleues = animations prévues.
+- Références de design et d'animation (`explorations/refs.md`) : **two26.studio** = le feeling visé (titres géants avec pastilles inclinées, bandeau qui défile, mots qui se colorent au scroll, trait qui se dessine entre les services, cartes témoignages empilées, footer plein écran avec logo géant ; GSAP + ScrollTrigger + SplitText + DrawSVG + Lenis). **andrefont.com** = formes organiques colorées avec gouttes.
 - Éléments d'identité dans « Design recherches » :
   - Illustration finale Léa & Maël : `14:37`
   - Objets du petit-déj (tartine, grille-pain, beurre, moka, confiture, fraise, croissant) : `14:2`
@@ -54,6 +56,8 @@
 ## Pages et contenus
 
 ### Accueil
+- **Version actuelle : `explorations/accueil-v3.html`** (+ `accueil-v3.js`, `tartine-toon.js`, ressources dans `assets/v3/`), codée d'après la maquette UI Figma `35:4` et ses cartes bleues. Les lignes suivantes décrivent des pistes antérieures.
+- Tartine du hero : modèles toon de `Portfolio-Mael/tartine.js` (6 variantes), clic = tartine suivante, glisser = rotation, pas de dessin. Polices : Faro (titres), PP Neue Montreal (texte), Geist (la carte, quelques détails).
 - Piste retenue : **B · La carte** (`explorations/accueil-b-carte.html`). Ordre : hero typographique → scrollytelling de la tartine (3 étapes) → plats du jour (projets) → la carte (services) → footer.
 - Icônes du hero petites par défaut, elles grandissent au survol en poussant le texte. La tartine 3D grandit d'abord dans le titre au scroll, puis descend.
 - Hero « Bienvenue chez Tartine Club, le coolectif de graphistes cool » + courte bio.

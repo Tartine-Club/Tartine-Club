@@ -4,7 +4,8 @@ Site du collectif de graphistes Tartine Club (Léa Dutarte & Maël Belviso, Toul
 
 ## Voir les maquettes
 
-- Accueil retenu (piste B · La carte) : `explorations/accueil-b-carte.html`
+- **Accueil actuel** (d'après la maquette UI Figma) : `explorations/accueil-v3.html`
+- Anciennes versions : `explorations/accueil-b-carte.html` (piste B), `explorations/accueil-v2.html`
 - Autres pistes explorées : `explorations/accueil-a-etiquette.html`, `explorations/accueil-c-table.html`
 - Réglage du rendu de la tartine 3D : `explorations/test-grain.html`
 
@@ -14,7 +15,7 @@ En local, la 3D a besoin d'un petit serveur (elle ne se charge pas en double-cli
 cd explorations && python3 -m http.server 8765
 ```
 
-puis ouvrir http://127.0.0.1:8765/accueil-b-carte.html
+puis ouvrir http://127.0.0.1:8765/accueil-v3.html
 
 ## Où sont les choses
 
